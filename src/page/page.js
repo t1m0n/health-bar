@@ -1,3 +1,3 @@
 import HealthBar from 'healthBar/healthBar';
 
-new HealthBar();
+window.hp = new HealthBar('#hp');
