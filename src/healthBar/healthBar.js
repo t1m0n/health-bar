@@ -43,10 +43,12 @@ export default class HealthBar {
      * @param {number} value - how many points should by wasted
      */
     waste(value){
+        this.stopRecoveryAnimation();
         let val = this.currentPoints - value;
         if (val < 0) val = 0;
         this.currentPoints = Math.round(val);
         this.updateCurrentPoints();
+        this.launchRecoverAnimation();
     }
 
     /**
@@ -60,8 +62,52 @@ export default class HealthBar {
         this.updateCurrentPoints();
     }
 
-    updateCurrentPoints(){
-        this.$currnetPoints.innerHTML = this.currentPoints;
+    updateCurrentPoints(val){
+        this.$currnetPoints.innerHTML = val || this.currentPoints;
+    }
+
+    launchRecoverAnimation(){
+        const start = Date.now();
+        const duration = this.recoverAnimationDuration;
+        const difference = this.pointsDifference;
+
+        function animate () {
+            let progress = (Date.now() - start) / duration;
+            if (progress > 1) progress = 1;
+
+            const value = this.middleCurrentPoints = this.currentPoints + Math.round(difference * progress);
+            this.updateCurrentPoints(value);
+
+            if (progress === 1) {
+                cancelAnimationFrame(this.recoveryAnimationFrame);
+                this.currentPoints = value;
+                return;
+            }
+
+            this.recoveryAnimationFrame = requestAnimationFrame(animate.bind(this))
+        }
+
+        this.recoveryAnimationFrame = requestAnimationFrame(animate.bind(this));
+    }
+
+    stopRecoveryAnimation(){
+        if (this.recoveryAnimationFrame) {
+            this.currentPoints = this.middleCurrentPoints;
+        }
+        cancelAnimationFrame(this.recoveryAnimationFrame);
+    }
+
+    /**
+     * How much time in ms needs to recover
+     * @returns {number}
+     */
+    get recoverAnimationDuration(){
+        const dif = this.points - this.currentPoints;
+        return dif / this.pointsPerSecond * 1000
+    }
+
+    get pointsDifference(){
+        return this.points - this.currentPoints;
     }
 
     get html(){
