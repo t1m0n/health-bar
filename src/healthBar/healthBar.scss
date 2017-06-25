@@ -2,6 +2,64 @@
     Health bar general styles
    ------------------------------------------------- */
 
-html {
+$horPadding: 5px;
+$HPBackground: #45852a;
 
+.health-bar {
+  background: darken($HPBackground, 15);
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, .3);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  font-weight: bold;
+  font-family: Tahoma, sans-serif;
+  font-size: 13px;
+  height: 24px;
+  width: 311px;
+
+  &:after {
+    content: '';
+    box-shadow: 0 0 24px rgba(0, 0, 0, .4) inset;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+}
+
+//  Bar
+// -------------------------------------------------
+
+.health-bar--bar {
+  background: $HPBackground;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: -2;
+}
+
+//  Points
+// -------------------------------------------------
+
+.health-bar--points {
+  color: #fff;
+  text-shadow: 2px 2px rgba(0, 0, 0, .9);
+}
+
+//  Regen
+// -------------------------------------------------
+
+.health-bar--regen {
+  color: rgba(255, 255, 255, .4);
+  text-shadow: 2px 2px rgba(0, 0, 0, .2);
+  position: absolute;
+  right: $horPadding;
 }

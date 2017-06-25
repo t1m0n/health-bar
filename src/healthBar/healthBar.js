@@ -1,9 +1,9 @@
 import './healthBar.scss'
 
 const defaults = {
-    points: 1000,
-    currentPoints: 1000,
-    pointsPerSecond: 5,
+    points: 700,
+    currentPoints: 700,
+    pointsPerSecond: 4.2,
     pointsSeparator: '/',
 };
 
@@ -14,7 +14,7 @@ export default class HealthBar {
 
         this.points = this.opts.points;
         this.pointsPerSecond = this.opts.pointsPerSecond;
-        this.currentPoints = this.opts.currentPoints;
+        this.currentPoints = this.middleCurrentPoints = this.opts.currentPoints;
 
         this.init();
     }
@@ -23,19 +23,19 @@ export default class HealthBar {
         this.createContainer();
         this.render();
         this.defineDOM();
+        this.setBarWidth();
     }
 
     createContainer(){
-        const el = document.createElement('div');
-        el.className = 'health-bar';
-
-        this.$hb = el;
-        this.el.appendChild(el);
+        this.el.classList.add('health-bar');
     }
 
     defineDOM(){
-        this.$currnetPoints = this.el.querySelector('.health-bar--points-current');
-        this.$pointsPerSecond = this.el.querySelector('.health-bar--regen');
+        const getEl  = this.el.querySelector.bind(this.el);
+
+        this.$currnetPoints = getEl('.health-bar--points-current');
+        this.$pointsPerSecond = getEl('.health-bar--regen');
+        this.$bar = getEl('.health-bar--bar');
     }
 
     /**
@@ -77,6 +77,7 @@ export default class HealthBar {
 
             const value = this.middleCurrentPoints = this.currentPoints + Math.round(difference * progress);
             this.updateCurrentPoints(value);
+            this.setBarWidth();
 
             if (progress === 1) {
                 cancelAnimationFrame(this.recoveryAnimationFrame);
@@ -88,6 +89,13 @@ export default class HealthBar {
         }
 
         this.recoveryAnimationFrame = requestAnimationFrame(animate.bind(this));
+    }
+
+    setBarWidth(){
+        const w = Math.floor((this.middleCurrentPoints / this.points) * 100);
+        if (this.width && this.width === w) return;
+        this.width = w;
+        this.$bar.style.cssText = `width: ${this.width}%`;
     }
 
     stopRecoveryAnimation(){
@@ -112,6 +120,7 @@ export default class HealthBar {
 
     get html(){
         return `
+            <div class="health-bar--bar"></div>
             <div class="health-bar--points">
                 <span class="health-bar--points-current">${this.currentPoints}</span>
                 <span class="health-bar--points-separator">${this.opts.pointsSeparator}</span>                  
@@ -122,6 +131,6 @@ export default class HealthBar {
     }
 
     render(){
-        this.$hb.innerHTML = this.html;
+        this.el.innerHTML = this.html;
     }
 }
