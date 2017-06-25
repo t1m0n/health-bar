@@ -1,3 +1,3 @@
-#Heath bar
+# Heath bar
 
-Health and mana bar from DOTA 2.
+Health and mana bars from DOTA 2.
